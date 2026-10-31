@@ -1,0 +1,49 @@
+{
+  "name": "expo-live-flv",
+  "version": "0.1.0-alpha.2",
+  "description": "Unstyled HTTP-FLV live playback with bounded reconnect and lifecycle handling for Expo native apps",
+  "license": "MIT",
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
+  "sideEffects": false,
+  "files": [
+    "build",
+    "app.plugin.js",
+    "LICENSE",
+    "NOTICE.md",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "npm run build && node --test tests/*.test.cjs",
+    "prepack": "npm run build"
+  },
+  "peerDependencies": {
+    "expo": ">=54.0.0 <55.0.0",
+    "expo-libvlc-player": "4.0.5",
+    "react": ">=19.1.0 <20.0.0",
+    "react-native": ">=0.81.0 <0.82.0"
+  },
+  "devDependencies": {
+    "@types/react": "19.1.10",
+    "typescript": "5.9.3",
+    "react-test-renderer": "19.1.0",
+    "expo": "54.0.37",
+    "expo-libvlc-player": "4.0.5",
+    "react": "19.1.0",
+    "react-native": "0.81.5"
+  },
+  "engines": {
+    "node": ">=20.19.4"
+  },
+  "packageManager": "pnpm@10.28.2",
+  "exports": {
+    ".": {
+      "types": "./build/index.d.ts",
+      "react-native": "./build/index.js",
+      "default": "./build/index.js"
+    },
+    "./app.plugin.js": "./app.plugin.js",
+    "./package.json": "./package.json"
+  }
+}

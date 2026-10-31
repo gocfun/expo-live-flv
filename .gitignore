@@ -1,0 +1,12 @@
+node_modules
+build/
+*.tgz
+.expo/
+.env*
+!.env.example
+.DS_Store
+example/android/
+example/ios/
+
+__pycache__
+*.pyc

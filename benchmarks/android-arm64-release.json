@@ -1,0 +1,55 @@
+{
+  "snapshot_sha256": "97707ad8b37d5247559f403f230a495cc815911a5863edc389429bac3d4f9676",
+  "dependency_lock_sha256": "2ee03dc6ce0259c27fc18170058f49ae30139e7fccf39315e800ef7e86d4269f",
+  "metro_wiring": "Node crawler; shared node_modules explicitly watched; same for both variants",
+  "platform": "Darwin",
+  "node": "v24.12.0",
+  "release_flags": [
+    "--console=plain",
+    "--no-daemon",
+    "--no-parallel",
+    "--max-workers=2",
+    "--no-configuration-cache",
+    "-PreactNativeArchitectures=arm64-v8a",
+    "-Pandroid.enableMinifyInReleaseBuilds=true",
+    "-Pandroid.enableShrinkResourcesInReleaseBuilds=true",
+    "-Dorg.gradle.jvmargs=-Xmx4096m -XX:MaxMetaspaceSize=1024m"
+  ],
+  "signing": "existing debug key, not production signed",
+  "variants": {
+    "with-vlc": {
+      "bytes": 99373369,
+      "sha256": "2b86e7a55cb1932d9e95e4813f44dc50eeb83770d747eb072337b96e0dec2e42",
+      "native_stored_bytes": 68136312,
+      "vlc_stored_bytes": 43182576,
+      "vlc_libraries": [
+        "lib/arm64-v8a/libvlc.so",
+        "lib/arm64-v8a/libvlcjni.so"
+      ],
+      "js_bundle_sha256": "414c34b2c652eafd07ebb031a8ba6adf619603306f04ea8d5d7e7d8f365744c1",
+      "native_library_count": 26,
+      "build_seconds": 856.6,
+      "arm64_16kb_checked_libraries": 26,
+      "arm64_16kb_alignment_failures": []
+    },
+    "without-vlc": {
+      "bytes": 55995640,
+      "sha256": "3e35788d58aa7417d210df2b94b344ab42ff062e23850f6812754e825c765898",
+      "native_stored_bytes": 24953736,
+      "vlc_stored_bytes": 0,
+      "vlc_libraries": [],
+      "js_bundle_sha256": "414c34b2c652eafd07ebb031a8ba6adf619603306f04ea8d5d7e7d8f365744c1",
+      "native_library_count": 24,
+      "build_seconds": 417.0,
+      "arm64_16kb_checked_libraries": 24,
+      "arm64_16kb_alignment_failures": []
+    }
+  },
+  "js_bundles_identical": true,
+  "delta_bytes": 43377729,
+  "delta_percent": 77.47,
+  "signing_certificates_identical": true,
+  "consumer_package_version_measured": "0.1.0-alpha.1",
+  "final_package_version": "0.1.0-alpha.2",
+  "final_package_note": "alpha.2 adds opt-in app engine options; native binding/engine versions unchanged. APK sizes are for the recorded fixed alpha.1 snapshot, not byte-exact final alpha.2 APKs."
+}

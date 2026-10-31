@@ -1,0 +1,9 @@
+{
+  "expo": {
+    "name": "Live FLV Example", "slug": "live-flv-example", "version": "0.0.1",
+    "newArchEnabled": true,
+    "ios": { "bundleIdentifier": "org.example.liveflv" },
+    "android": { "package": "org.example.liveflv" },
+    "plugins": ["expo-live-flv"]
+  }
+}
