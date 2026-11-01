@@ -24,9 +24,10 @@
 - This automated audit run did not compile or launch a native app or play a
   stream. Consumer playback was tested separately by the maintainer (see above). Native engine versions and
   previously recorded APK measurements are unchanged; those APKs were not rebuilt.
-- Repository metadata targets `https://github.com/gocfun/expo-live-flv`; remote
-  creation is pending. npm name ownership and a private security reporting channel
-  remain release setup items in RELEASING.md. Nothing was published.
+- Public repository created at `https://github.com/gocfun/expo-live-flv` and
+  package metadata configured for it. npm name ownership and a private security
+  reporting channel remain release setup items in RELEASING.md. No npm package
+  or application deployment was published.
 
 ## Historical extraction baseline — 2026-10-31
 

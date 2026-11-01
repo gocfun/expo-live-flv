@@ -13,8 +13,8 @@ Keep the package marked alpha until the supported-device matrix is verified.
 - Review actual VLC/native artifacts and their notices/source obligations before
   distributing an application binary; this wrapper's MIT license is not native
   dependency clearance. Preserve exact artifact/version evidence.
-- Repository metadata targets `https://github.com/gocfun/expo-live-flv`.
-  Verify the public repository and issue tracker are accessible before npm publication.
+- Public repository and package metadata use `https://github.com/gocfun/expo-live-flv`.
+  Verify the repository and issue tracker remain accessible before npm publication.
 - Configure a private security reporting channel before public release; see
   SECURITY.md. Do not publish a fictitious address or enable public credential reports.
 - Check npm name availability and ownership. Review the public package contents,

@@ -3,10 +3,10 @@
 Never include stream credentials, signed URL queries, private endpoints, signing
 keys or unredacted native logs in public issues or pull requests.
 
-This local alpha does not yet have a public repository or a configured private
-security reporting channel. Configure GitHub private vulnerability reporting (or
+This alpha does not yet have a configured private security reporting channel.
+Configure GitHub private vulnerability reporting (or
 another monitored private channel) and replace this paragraph with the verified
-reporting link before public release. Until then, do not submit sensitive reports
+reporting link before npm publication. Until then, do not submit sensitive reports
 to a public issue tracker.
 
 Reports should identify the package/native-binding versions, affected platform,
