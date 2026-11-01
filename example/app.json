@@ -4,6 +4,6 @@
     "newArchEnabled": true,
     "ios": { "bundleIdentifier": "org.example.liveflv" },
     "android": { "package": "org.example.liveflv" },
-    "plugins": ["expo-live-flv"]
+    "plugins": ["@gocfun/expo-live-flv"]
   }
 }

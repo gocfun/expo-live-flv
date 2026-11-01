@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- Scope the npm package as `@gocfun/expo-live-flv`; update examples, plugin names
+  and package smoke checks, and add an explicit public `publish:alpha` command.
+
 - Fix backwards media timestamps incorrectly refreshing the stall watchdog and
   restoring an exhausted retry budget. Timestamp resets now require a fresh
   sustained period of forward progress before the budget is restored.

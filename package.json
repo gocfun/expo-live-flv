@@ -1,5 +1,5 @@
 {
-  "name": "expo-live-flv",
+  "name": "@gocfun/expo-live-flv",
   "version": "0.1.0-alpha.2",
   "description": "Unstyled HTTP-FLV live playback with bounded reconnect and lifecycle handling for Expo native apps",
   "keywords": [
@@ -30,7 +30,8 @@
     "build": "tsc -p tsconfig.json",
     "test": "npm run build && node --test tests/*.test.cjs",
     "test:package": "node scripts/smoke-package.cjs",
-    "prepack": "npm run build"
+    "prepack": "npm run build",
+    "publish:alpha": "npm publish --access public --tag alpha --registry=https://registry.npmjs.org/"
   },
   "peerDependencies": {
     "expo": ">=54.0.0 <55.0.0",
@@ -67,5 +68,9 @@
   "homepage": "https://github.com/gocfun/expo-live-flv#readme",
   "bugs": {
     "url": "https://github.com/gocfun/expo-live-flv/issues"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
   }
 }

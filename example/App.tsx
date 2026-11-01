@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { Button, SafeAreaView, Text, TextInput, View } from 'react-native'
-import { LiveFlvPlayer } from 'expo-live-flv'
-import type { PlaybackState } from 'expo-live-flv'
+import { LiveFlvPlayer } from '@gocfun/expo-live-flv'
+import type { PlaybackState } from '@gocfun/expo-live-flv'
 
 export default function App() {
   const [input, setInput] = useState('')

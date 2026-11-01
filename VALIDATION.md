@@ -11,6 +11,16 @@
   they should not be described as globally untested or automatically extended to
   every scenario/platform or to the current unreleased watchdog fix.
 
+## Scoped npm package checks — 2026-11-01
+
+- Package renamed to `@gocfun/expo-live-flv`; examples, Expo plugin references,
+  example lockfile and smoke checks use the scoped name.
+- Example frozen-lockfile validation, 20/20 tests and tarball consumer typecheck,
+  plugin introspection, Android/iOS/web exports and web source-map checks pass.
+- Publishing targets the public npm registry with public access; the dedicated
+  `publish:alpha` command explicitly selects tag `alpha`.
+  No npm publication was performed by these checks.
+
 ## Open-source readiness checks — 2026-11-01
 
 - Node 24.12.0 / pnpm 10.28.2: TypeScript build and 20/20 unit/mocked-component

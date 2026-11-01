@@ -1,4 +1,4 @@
-# expo-live-flv (alpha)
+# @gocfun/expo-live-flv (alpha)
 
 Unstyled native HTTP-FLV playback for Expo, using the existing open-source
 `expo-libvlc-player` binding. No SDK fee or hosted playback service is required.
@@ -11,24 +11,32 @@ report `unsupported` without eagerly loading the native view.
 
 ## Install
 
-This package has not been published to npm. Build and pack this repository:
+The package is prepared for publication under the npm organization `gocfun`.
+After an alpha is published, install it with:
+
+```sh
+npm install @gocfun/expo-live-flv@alpha expo-libvlc-player@4.0.5
+# or: pnpm add @gocfun/expo-live-flv@alpha expo-libvlc-player@4.0.5
+```
+
+For local development before publication, build and pack this repository:
 
 ```sh
 pnpm install --frozen-lockfile
 pnpm test
 pnpm pack
 # In a consuming Expo app, install the generated local tarball and peers:
-pnpm add /absolute/path/expo-live-flv-0.1.0-alpha.2.tgz expo-libvlc-player@4.0.5
+pnpm add /absolute/path/gocfun-expo-live-flv-0.1.0-alpha.2.tgz expo-libvlc-player@4.0.5
 ```
 
-Add `expo-live-flv` to app config `plugins` (or keep the upstream
+Add `@gocfun/expo-live-flv` to app config `plugins` (or keep the upstream
 `expo-libvlc-player` plugin, but do not add both). Rebuild native projects;
 CocoaPods is needed for iOS. By default, the plugin leaves background audio disabled;
 it does not change your OTA runtime or cleartext permissions. Manage native runtime/channel
 separation in the consuming application. Do not clean-prebuild a dirty project.
 
 ```tsx
-import { LiveFlvPlayer } from 'expo-live-flv'
+import { LiveFlvPlayer } from '@gocfun/expo-live-flv'
 
 <LiveFlvPlayer
   source={authorizedHttpsFlvUrl}
@@ -116,7 +124,7 @@ For iOS, configure the delegated upstream plugin and rebuild the native app:
 ```json
 {
   "expo": {
-    "plugins": [["expo-live-flv", { "supportsBackgroundPlayback": true }]]
+    "plugins": [["@gocfun/expo-live-flv", { "supportsBackgroundPlayback": true }]]
   }
 }
 ```
@@ -164,7 +172,9 @@ See LICENSE for this code and NOTICE.md for upstream obligations.
 Source repository: [gocfun/expo-live-flv](https://github.com/gocfun/expo-live-flv).
 The package is alpha; no npm release or application deployment is included.
 
-The package name is provisional; npm namespace availability has not been checked.
+The npm package name is `@gocfun/expo-live-flv`. Publishing requires membership
+and package creation/publish permission in the `gocfun` organization on npm.
+GitHub organization membership alone does not grant npm permissions.
 
 ## Run the standalone example
 

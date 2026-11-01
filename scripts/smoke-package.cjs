@@ -7,6 +7,7 @@ const path = require('node:path')
 const { spawnSync } = require('node:child_process')
 
 const root = path.resolve(__dirname, '..')
+const packageName = require('../package.json').name
 const scratch = fs.mkdtempSync(path.join(os.tmpdir(), 'expo-live-flv-smoke-'))
 const consumer = path.join(scratch, 'consumer')
 const offline = process.argv.includes('--offline')
@@ -32,7 +33,7 @@ try {
     fs.copyFileSync(path.join(root, 'example', name), path.join(consumer, name))
   }
   const manifest = JSON.parse(fs.readFileSync(path.join(root, 'example/package.json'), 'utf8'))
-  manifest.dependencies['expo-live-flv'] = `file:${path.join(scratch, archives[0])}`
+  manifest.dependencies[packageName] = `file:${path.join(scratch, archives[0])}`
   // Versions come from the installed Expo SDK's own compatibility manifest.
   const bundled = require('expo/bundledNativeModules.json')
   manifest.dependencies['react-dom'] = bundled['react-dom']
@@ -45,7 +46,7 @@ try {
   assert.ok(!config._internal.modResults.ios.infoPlist.UIBackgroundModes?.includes('audio'),
     'Default plugin must not enable background audio')
   const app = JSON.parse(fs.readFileSync(path.join(consumer, 'app.json'), 'utf8'))
-  app.expo.plugins = [['expo-live-flv', { supportsBackgroundPlayback: true }]]
+  app.expo.plugins = [[packageName, { supportsBackgroundPlayback: true }]]
   fs.writeFileSync(path.join(consumer, 'app.json'), JSON.stringify(app, null, 2))
   const background = JSON.parse(run(['exec', 'expo', 'config', '--type', 'introspect', '--json'], consumer, true))
   assert.ok(background._internal.modResults.ios.infoPlist.UIBackgroundModes.includes('audio'),
@@ -55,7 +56,7 @@ try {
   const maps = fs.readdirSync(webDir).filter(name => name.endsWith('.map'))
   assert.ok(maps.length > 0, 'Expected web source maps')
   const sources = maps.flatMap(name => JSON.parse(fs.readFileSync(path.join(webDir, name), 'utf8')).sources)
-  assert.ok(sources.some(name => name.endsWith('/expo-live-flv/build/LiveFlvPlayer.web.js')),
+  assert.ok(sources.some(name => name.endsWith(`/${packageName}/build/LiveFlvPlayer.web.js`)),
     'Web bundle must resolve the unsupported web adapter')
   assert.ok(!sources.some(name => name.includes('/expo-libvlc-player/')),
     'Web bundle must not include the upstream native binding')
