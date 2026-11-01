@@ -2,6 +2,17 @@
   "name": "expo-live-flv",
   "version": "0.1.0-alpha.2",
   "description": "Unstyled HTTP-FLV live playback with bounded reconnect and lifecycle handling for Expo native apps",
+  "keywords": [
+    "expo",
+    "react-native",
+    "http-flv",
+    "flv",
+    "live-streaming",
+    "low-latency",
+    "vlc",
+    "video-player"
+  ],
+  "author": "Windy Nguyen <thewind0811@gmail.com>",
   "license": "MIT",
   "main": "build/index.js",
   "types": "build/index.d.ts",
