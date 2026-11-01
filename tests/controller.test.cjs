@@ -90,6 +90,53 @@ test('dispose during reconnect cancels all timers and ignores native callbacks',
   f.advance(60000); f.controller.progress(2, 0); f.controller.playing(0)
   assert.equal(f.timers.size, 0); assert.equal(f.restarts.length, 1); assert.equal(f.states.length, n)
 })
+
+test('backwards-only media timestamps neither extend watchdog nor replenish retry budget', () => {
+  const stalled = fixture()
+  stalled.controller.progress(100000, 0)
+  stalled.advance(10000); stalled.controller.progress(90000, 0)
+  stalled.advance(10000)
+  assert.equal(stalled.states.at(-1).reason, 'stalled')
+  stalled.controller.dispose()
+
+  const f = fixture({ retryDelaysMs: [1000], stallTimeoutMs: 60000 })
+  f.controller.fail('native-error', 0); f.advance(1000)
+  f.controller.progress(100000, 1)
+  for (const time of [90000, 80000, 70000]) {
+    f.advance(10000); f.controller.progress(time, 1)
+  }
+  f.controller.fail('native-error', 1)
+  assert.equal(f.states.at(-1).status, 'failed')
+  f.controller.dispose()
+})
+
+test('timestamp reset permits recovery only after a new sustained period of forward progress', () => {
+  for (const recovered of [false, true]) {
+    const f = fixture({ retryDelaysMs: [1000] })
+    f.controller.fail('native-error', 0); f.advance(1000)
+    f.controller.progress(100000, 1)
+    f.advance(10000); f.controller.progress(110000, 1)
+    f.controller.progress(0, 1)
+    for (const time of recovered ? [10000, 20000, 30000, 40000] : [10000, 20000, 30000]) {
+      f.advance(10000); f.controller.progress(time, 1)
+    }
+    f.controller.fail('native-error', 1)
+    assert.equal(f.states.at(-1).status, recovered ? 'reconnecting' : 'failed')
+    f.controller.dispose()
+  }
+})
+
+test('oscillating timestamps cannot accumulate a healthy recovery window', () => {
+  const f = fixture({ retryDelaysMs: [1000] })
+  f.controller.fail('native-error', 0); f.advance(1000)
+  f.controller.progress(0, 1)
+  for (let i = 0; i < 8; i++) {
+    f.advance(5000); f.controller.progress(i % 2 === 0 ? 1000 : 0, 1)
+  }
+  f.controller.fail('native-error', 1)
+  assert.equal(f.states.at(-1).status, 'failed')
+  f.controller.dispose()
+})
 test('dispose while playing cancels watchdog; a remounted controller starts clean', () => {
   const f = fixture(); f.controller.progress(1, 0); f.controller.dispose(); f.advance(60000)
   assert.equal(f.timers.size, 0)

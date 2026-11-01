@@ -1,4 +1,34 @@
-# Validation — 2026-10-31
+# Validation
+
+## Consumer playback confirmation — reported 2026-11-01
+
+- The maintainer confirmed playback testing was already completed in
+  `gocfun-mobile`. This is consumer integration testing in addition to the
+  automated checks below.
+- Tested device: **iPhone 12 Pro Max, iOS 26.7.2**, as reported by the maintainer.
+- Tested revision, execution date and individual scenarios were not supplied
+  in this confirmation. Record existing results in DEVICE_TESTING.md;
+  they should not be described as globally untested or automatically extended to
+  every scenario/platform or to the current unreleased watchdog fix.
+
+## Open-source readiness checks — 2026-11-01
+
+- Node 24.12.0 / pnpm 10.28.2: TypeScript build and 20/20 unit/mocked-component
+  tests pass, including backwards/oscillating/reset timestamp regression cases.
+- Packed package installed in an independent temporary Expo consumer (no link to
+  library source). Consumer typecheck and default/opt-in config plugin introspection
+  pass. Default plugin leaves background audio disabled; opt-in adds the iOS audio mode.
+- Android/iOS Hermes and web Metro exports pass. Web source-map checks ensure
+  the web adapter is selected and the upstream native VLC binding is excluded.
+- Fixed the example entry point for pnpm isolated dependency layouts.
+- This automated audit run did not compile or launch a native app or play a
+  stream. Consumer playback was tested separately by the maintainer (see above). Native engine versions and
+  previously recorded APK measurements are unchanged; those APKs were not rebuilt.
+- Repository metadata targets `https://github.com/gocfun/expo-live-flv`; remote
+  creation is pending. npm name ownership and a private security reporting channel
+  remain release setup items in RELEASING.md. Nothing was published.
+
+## Historical extraction baseline — 2026-10-31
 
 - Standalone repo: pnpm install --frozen-lockfile --ignore-scripts; pnpm test:
   TypeScript build and 16/16 unit/mocked-component tests pass.
@@ -14,8 +44,9 @@
   found in the installed GocFun package. The engine/binding versions are unchanged;
   this report does not claim byte-exact final alpha.2 APK size.
 - No custom/slim VLC build has been attempted in this phase.
-- No stream/device run: actual TLS, playback, network switching, lifecycle effects,
-  latency, CPU, RAM, battery and release distribution compliance remain to verify.
+- This historical extraction run did not include stream/device execution. Later
+  consumer playback confirmation is recorded above; detailed scenario and
+  performance measurements are tracked separately in DEVICE_TESTING.md.
 - Native engine remains the existing expo-libvlc-player 4.0.5 dependency:
   MobileVLCKit 3.7.3 / Android LibVLC 3.6.5. iOS native binding compiled in the
   earlier consumer experiment; only the extracted JS bundle was revalidated here.

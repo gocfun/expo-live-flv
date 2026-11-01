@@ -82,6 +82,9 @@ test('playInBackground retains native view and forwards flag during app backgrou
   await f.background('background'); assert.equal(f.nativeCount(), 1)
   assert.equal(f.native().props.playInBackground, true)
   await f.background('active'); assert.equal(f.nativeCount(), 1)
+  await f.update({ paused: true }); assert.equal(f.nativeCount(), 0)
+  await f.update({ paused: false, active: false }); assert.equal(f.nativeCount(), 0)
+  await f.update({ active: true }); assert.equal(f.nativeCount(), 1)
   await f.dispose()
 })
 test('new source tears down old attempt; ref retry creates a fresh attempt after exhaustion', async () => {

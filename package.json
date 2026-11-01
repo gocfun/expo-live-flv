@@ -22,11 +22,14 @@
     "app.plugin.js",
     "LICENSE",
     "NOTICE.md",
+    "DEVICE_TESTING.md",
+    "CHANGELOG.md",
     "README.md"
   ],
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "test": "npm run build && node --test tests/*.test.cjs",
+    "test:package": "node scripts/smoke-package.cjs",
     "prepack": "npm run build"
   },
   "peerDependencies": {
@@ -56,5 +59,13 @@
     },
     "./app.plugin.js": "./app.plugin.js",
     "./package.json": "./package.json"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gocfun/expo-live-flv.git"
+  },
+  "homepage": "https://github.com/gocfun/expo-live-flv#readme",
+  "bugs": {
+    "url": "https://github.com/gocfun/expo-live-flv/issues"
   }
 }

@@ -5,7 +5,12 @@ of app APIs, auth, navigation and styling frameworks. Put new state-machine test
 in tests/controller.test.cjs and component boundary tests in tests/component.test.cjs.
 The native view is mocked in component tests; report device tests separately.
 
-Before a PR: pnpm test, npm pack, and describe tested Expo/RN/OS versions.
+Before a PR: `pnpm test`, `pnpm test:package`, and describe tested Expo/RN/OS versions.
+The package smoke test installs a tarball into a temporary standalone Expo app,
+checks types and default/opt-in config plugins, then bundles Android, iOS and web.
+It requires registry access (or `pnpm test:package --offline` with a complete pnpm
+cache). `--keep` retains the temporary app for debugging. Device checks are tracked
+in DEVICE_TESTING.md; release requirements are in RELEASING.md.
 Do not include .env files, credentials, signed stream URLs, native signing keys or
 application source from a consumer app. Redact URL queries and native messages
 before submitting logs. Error reports should include stable reason codes and

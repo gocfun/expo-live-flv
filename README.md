@@ -1,4 +1,4 @@
-# expo-live-flv (local alpha)
+# expo-live-flv (alpha)
 
 Unstyled native HTTP-FLV playback for Expo, using the existing open-source
 `expo-libvlc-player` binding. No SDK fee or hosted playback service is required.
@@ -18,13 +18,13 @@ pnpm install --frozen-lockfile
 pnpm test
 pnpm pack
 # In a consuming Expo app, install the generated local tarball and peers:
-pnpm add /absolute/path/expo-live-flv-0.1.0-alpha.1.tgz expo-libvlc-player@4.0.5
+pnpm add /absolute/path/expo-live-flv-0.1.0-alpha.2.tgz expo-libvlc-player@4.0.5
 ```
 
 Add `expo-live-flv` to app config `plugins` (or keep the upstream
 `expo-libvlc-player` plugin, but do not add both). Rebuild native projects;
-CocoaPods is needed for iOS. The plugin does not change your OTA runtime,
-background-audio settings or cleartext permissions. Manage native runtime/channel
+CocoaPods is needed for iOS. By default, the plugin leaves background audio disabled;
+it does not change your OTA runtime or cleartext permissions. Manage native runtime/channel
 separation in the consuming application. Do not clean-prebuild a dirty project.
 
 ```tsx
@@ -51,18 +51,20 @@ HTTPS is required; credentials in the URL and surrounding whitespace are rejecte
 
 ## Playback policy
 
-- App background, `active={false}`, pause and unmount release the native view and
+- By default, app background, `active={false}`, pause and unmount release the native view and
   cancel timers. Foreground/resume opens a fresh live connection. Route focus is
   explicitly supplied by the application.
 - Defaults: network/live caching 700 ms; no-time-advancement watchdog 20 s;
   five retries at 1/2/4/8/8 s. Repeated native errors/end-of-stream are coalesced.
 - Thirty seconds of advancing media time resets the retry budget; brief playing
   events do not. A finite number of failures per unstable period reaches `failed`.
+  A backwards timestamp resets the healthy observation window without refreshing
+  the watchdog. Subsequent forward timestamps can establish a new healthy window.
 - Progress callback is throttled to 500 ms by default. The JS wrapper does not log
   URLs/native errors; review upstream native VLC logs on target devices.
   These limits reduce JS work, not the upstream native event generation rate.
 - HTTP-FLV is non-seekable here and runs at rate 1. Media time is not glass-to-glass
-  latency. No invented seekable live window, HLS fallback, PiP or background audio.
+  latency. No seekable live window, HLS fallback or PiP. Background playback is opt-in.
 - Content fit uses measured container dimensions. Both portrait and landscape
   streams are supported without forcing a 16:9 native viewport.
 
@@ -71,6 +73,63 @@ Configuration: `networkCachingMs` (100–10000), `progressIntervalMs` (>=100),
 Callbacks: `onStatusChange`, `onVideoSize`, `onProgress({timeSeconds})`.
 Status: idle/loading/playing/reconnecting/failed/unsupported; failures use stable
 codes rather than native messages containing potentially sensitive URLs.
+
+## API reference
+
+| Prop | Default | Behavior |
+|---|---|---|
+| `source` | required | HTTPS URL or `null` to disconnect; URL credentials are rejected. |
+| `active` | `true` | Set false on navigation blur to release the native player. |
+| `paused` | `false` | Releases the player; resume creates a fresh live connection. |
+| `muted` | `false` | Mutes audio without restarting the session. |
+| `playInBackground` | `false` | Keeps the player mounted in background; see platform requirements below. |
+| `contentFit` | `contain` | `contain` or `cover`. |
+| `style` | none | Container style; supply width and height or aspect ratio. |
+| `networkCachingMs` | `700` | Finite inputs clamp to 100–10000 ms; non-finite values use the default. |
+| `vlcOptions` | `[]` | App-owned VLC initialization flags; changes restart playback. |
+| `retryDelaysMs` | `[1000, 2000, 4000, 8000, 8000]` | Finite nonnegative delays; `[]` disables automatic retry. |
+| `stallTimeoutMs` | `20000` | Watchdog timeout; finite and at least 1000 ms. |
+| `healthyResetMs` | `30000` | Healthy observation duration before retry budget resets; finite and at least 1000 ms. |
+| `progressIntervalMs` | `500` | JS callback interval; finite inputs clamp to at least 100 ms. |
+
+Invalid retry/watchdog timing policies throw when an eligible playback session
+starts. Source, retry/watchdog policy, cache options, background policy and manual
+retry changes recreate the session. `attempt` starts at 0 and increments on automatic
+reconnect within that session; it is not the remaining retry budget.
+
+`onStatusChange(state)` reports lifecycle state. `onVideoSize({width, height})`
+reports positive media dimensions on first play of each attempt.
+`onProgress({timeSeconds})` reports native media time in seconds; it can reset or
+move backwards and is not a latency measurement.
+`renderOverlay(state, retry)` renders application-owned UI after the player;
+use absolute positioning to place it over the video. A `LiveFlvPlayerRef` exposes
+the same manual `retry()` action, which starts a new session with a fresh budget.
+
+## Background playback
+
+Set `playInBackground` on the component to retain playback when the app enters
+background or the screen locks. `active={false}` and `paused={true}` still release
+the player even with this option enabled.
+
+For iOS, configure the delegated upstream plugin and rebuild the native app:
+
+```json
+{
+  "expo": {
+    "plugins": [["expo-live-flv", { "supportsBackgroundPlayback": true }]]
+  }
+}
+```
+
+This opt-in adds `audio` to `UIBackgroundModes`; installing the plugin without
+options does not enable it. The plugin also accepts upstream
+`localNetworkPermission` configuration. Use only one of this plugin or the upstream
+plugin. Changing native settings requires a new native build.
+
+On Android, this wrapper does not implement a foreground playback service or
+media notification. OS background/battery restrictions still apply; retaining
+the view does not guarantee uninterrupted background playback. Background/lock
+behavior on either platform requires the device checks in `DEVICE_TESTING.md`.
 
 ## Size and performance
 
@@ -83,6 +142,15 @@ No fixed latency or binary-size reduction is promised.
 
 ## Development
 
+Use Node >=20.19.4 and pnpm 10.28.2. Run `pnpm test` for the unit/component
+suite, then `pnpm test:package` to install a tarball in a temporary clean Expo
+consumer, check types and plugin configuration, and bundle Android/iOS/web.
+The smoke check also verifies the web bundle uses the unsupported adapter without
+including the upstream native binding. Registry access is needed unless the pnpm
+cache is complete (`pnpm test:package --offline`); add `--keep` to inspect the
+temporary app. Release and device requirements are in RELEASING.md and
+DEVICE_TESTING.md in the source repository.
+
 `pnpm test` builds TypeScript and tests the actual reconnect controller with a fake
 clock: budget exhaustion, duplicate/stale callbacks, watchdogs, sustained recovery
 and disposal. Component tests mock the native view to exercise background/pause,
@@ -92,9 +160,9 @@ it does not contain credentials or a production endpoint. Native build evidence
 and device-playback verification are separate; a successful build does not prove
 actual playback, TLS/network behavior or thermal performance.
 
-See LICENSE for this code and NOTICE.md for upstream obligations. This is a local
-alpha repository; no GitHub repository, npm release or application deployment has
-been created automatically.
+See LICENSE for this code and NOTICE.md for upstream obligations.
+Source repository: [gocfun/expo-live-flv](https://github.com/gocfun/expo-live-flv).
+The package is alpha; no npm release or application deployment is included.
 
 The package name is provisional; npm namespace availability has not been checked.
 

@@ -73,6 +73,13 @@ export class PlaybackController {
   }
   progress(timeMs: number, generation: number): void {
     if (!this.accepts(generation) || !Number.isFinite(timeMs) || timeMs < 0 || timeMs === this.mediaTime) return
+    // Rebase after a timestamp discontinuity, but don't let backwards time
+    // refresh the watchdog or count toward a sustained healthy period.
+    if (this.mediaTime !== null && timeMs < this.mediaTime) {
+      this.mediaTime = timeMs
+      this.healthySince = null
+      return
+    }
     this.mediaTime = timeMs
     const now = this.options.clock.now()
     this.lastProgress = now

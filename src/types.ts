@@ -8,7 +8,8 @@ export interface LiveFlvPlayerProps {
   active?: boolean
   paused?: boolean
   muted?: boolean
-  /** Continue playing audio in background or when device is locked. Requires iOS UIBackgroundModes audio. */
+  /** Retain playback in background/lock. iOS requires UIBackgroundModes audio;
+   * Android OS restrictions apply (no foreground service is provided). */
   playInBackground?: boolean
   contentFit?: 'contain' | 'cover'
   style?: StyleProp<ViewStyle>
