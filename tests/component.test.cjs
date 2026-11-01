@@ -76,6 +76,14 @@ test('component releases timers and native view on background, pause, navigation
   await f.update({ active: true }); assert.equal(f.nativeCount(), 1)
   await f.dispose(); assert.equal(f.timers.size, 0)
 })
+test('playInBackground retains native view and forwards flag during app background', async () => {
+  const f = setup(); await f.mount({ playInBackground: true }); assert.equal(f.nativeCount(), 1)
+  assert.equal(f.native().props.playInBackground, true)
+  await f.background('background'); assert.equal(f.nativeCount(), 1)
+  assert.equal(f.native().props.playInBackground, true)
+  await f.background('active'); assert.equal(f.nativeCount(), 1)
+  await f.dispose()
+})
 test('new source tears down old attempt; ref retry creates a fresh attempt after exhaustion', async () => {
   const f = setup(); await f.mount({ retryDelaysMs: [] })
   const oldEvent = f.native().props.onEncounteredError

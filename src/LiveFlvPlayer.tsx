@@ -26,7 +26,7 @@ const LiveFlvPlayer = forwardRef<LiveFlvPlayerRef, LiveFlvPlayerProps>((props, r
     const listener = AppState.addEventListener('change', setAppState)
     return () => listener.remove()
   }, [])
-  const active = props.active !== false && !props.paused && appState === 'active'
+  const active = props.active !== false && !props.paused && (props.playInBackground ? true : appState === 'active')
   const valid = isSecureLiveSource(props.source)
   const eligible = active && valid && !!NativePlayer
   const inactiveState: PlaybackState = !active || !props.source ? { status: 'idle', attempt: 0 }
@@ -39,7 +39,7 @@ const LiveFlvPlayer = forwardRef<LiveFlvPlayerRef, LiveFlvPlayerProps>((props, r
   }, [displayed.status, displayed.attempt, displayed.reason])
   // Timing option changes create a clean session rather than retaining old timers.
   const sessionKey = JSON.stringify([props.source, nonce, props.retryDelaysMs,
-    props.stallTimeoutMs, props.healthyResetMs, props.networkCachingMs, props.vlcOptions])
+    props.stallTimeoutMs, props.healthyResetMs, props.networkCachingMs, props.vlcOptions, props.playInBackground])
   return <View style={props.style} onLayout={({ nativeEvent: { layout } }) => {
     if (layout.width > 0 && layout.height > 0) setSize(old =>
       Math.abs(old.width - layout.width) < 1 && Math.abs(old.height - layout.height) < 1
@@ -94,7 +94,7 @@ function Attempt(props: Parameters<typeof Session>[0] & { generation: number; co
   return <NativePlayer source={props.source} style={{ width: '100%', height: '100%' }}
     aspectRatio={resolveAspectRatio(props.size.width, props.size.height, videoRatio)}
     contentFit={props.contentFit ?? 'contain'} options={options} autoplay
-    playInBackground={false} repeat={false} mute={!!props.muted} rate={1}
+    playInBackground={!!props.playInBackground} repeat={false} mute={!!props.muted} rate={1}
     onEncounteredError={() => fail('native-error')} onEndReached={() => fail('ended')}
     onPlaying={() => { if (alive.current) props.controller.playing(props.generation) }}
     onFirstPlay={({ width, height }) => {
