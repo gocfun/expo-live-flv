@@ -42,6 +42,9 @@ try {
   run(['install', '--ignore-scripts', '--no-frozen-lockfile', ...(offline ? ['--offline'] : [])])
   run(['exec', 'tsc', '--noEmit'])
 
+  const defaults = JSON.parse(fs.readFileSync(path.join(consumer, 'app.json'), 'utf8'))
+  defaults.expo.plugins = [packageName]
+  fs.writeFileSync(path.join(consumer, 'app.json'), JSON.stringify(defaults, null, 2))
   const config = JSON.parse(run(['exec', 'expo', 'config', '--type', 'introspect', '--json'], consumer, true))
   assert.ok(!config._internal.modResults.ios.infoPlist.UIBackgroundModes?.includes('audio'),
     'Default plugin must not enable background audio')
@@ -55,7 +58,13 @@ try {
   const webDir = path.join(consumer, 'dist/_expo/static/js/web')
   const maps = fs.readdirSync(webDir).filter(name => name.endsWith('.map'))
   assert.ok(maps.length > 0, 'Expected web source maps')
-  const sources = maps.flatMap(name => JSON.parse(fs.readFileSync(path.join(webDir, name), 'utf8')).sources)
+  function collectSources(map) {
+    return [
+      ...(map.sources || []).filter(source => typeof source === 'string'),
+      ...(map.sections || []).flatMap(section => collectSources(section.map)),
+    ]
+  }
+  const sources = maps.flatMap(name => collectSources(JSON.parse(fs.readFileSync(path.join(webDir, name), 'utf8'))))
   assert.ok(sources.some(name => name.endsWith(`/${packageName}/build/LiveFlvPlayer.web.js`)),
     'Web bundle must resolve the unsupported web adapter')
   assert.ok(!sources.some(name => name.includes('/expo-libvlc-player/')),

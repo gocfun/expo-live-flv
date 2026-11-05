@@ -1,0 +1,19 @@
+{
+  "name": "expo-live-flv-sdk54-check",
+  "private": true,
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "expo": "54.0.37",
+    "@gocfun/expo-live-flv": "file:../..",
+    "expo-libvlc-player": "4.0.5",
+    "react": "19.1.0",
+    "react-native": "0.81.5"
+  },
+  "devDependencies": {
+    "@types/react": "19.1.10",
+    "typescript": "5.9.3",
+    "react-test-renderer": "19.1.0"
+  }
+}

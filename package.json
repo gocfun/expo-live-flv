@@ -1,18 +1,7 @@
 {
   "name": "@gocfun/expo-live-flv",
-  "version": "0.1.0-alpha.2",
+  "version": "1.0.0",
   "description": "Unstyled HTTP-FLV live playback with bounded reconnect and lifecycle handling for Expo native apps",
-  "keywords": [
-    "expo",
-    "react-native",
-    "http-flv",
-    "flv",
-    "live-streaming",
-    "low-latency",
-    "vlc",
-    "video-player"
-  ],
-  "author": "Windy Nguyen <thewind0811@gmail.com>",
   "license": "MIT",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -22,34 +11,41 @@
     "app.plugin.js",
     "LICENSE",
     "NOTICE.md",
-    "DEVICE_TESTING.md",
+    "README.md",
     "CHANGELOG.md",
-    "README.md"
+    "MIGRATION.md",
+    "plugin",
+    "VALIDATION.md",
+    "RELEASE.md",
+    "DEVICE_TESTING.md",
+    "SECURITY.md"
   ],
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "test": "npm run build && node --test tests/*.test.cjs",
-    "test:package": "node scripts/smoke-package.cjs",
-    "prepack": "npm run build",
-    "publish:alpha": "npm publish --access public --tag alpha --registry=https://registry.npmjs.org/"
+    "prepack": "pnpm build && node scripts/check-release.cjs",
+    "release:check": "node scripts/check-release.cjs",
+    "prepublishOnly": "pnpm test && node scripts/check-release.cjs",
+    "test:package": "node scripts/smoke-package.cjs"
   },
   "peerDependencies": {
-    "expo": ">=54.0.0 <55.0.0",
+    "expo": "^54.0.37 || ^58.0.23",
     "expo-libvlc-player": "4.0.5",
     "react": ">=19.1.0 <20.0.0",
-    "react-native": ">=0.81.0 <0.82.0"
+    "react-native": "^0.81.5 || ^0.88.1"
   },
   "devDependencies": {
-    "@types/react": "19.1.10",
-    "typescript": "5.9.3",
-    "react-test-renderer": "19.1.0",
-    "expo": "54.0.37",
+    "@types/react": "19.3.0",
+    "typescript": "6.0.3",
+    "react-test-renderer": "19.3.0",
+    "expo": "58.0.23",
     "expo-libvlc-player": "4.0.5",
-    "react": "19.1.0",
-    "react-native": "0.81.5"
+    "react": "19.3.0",
+    "react-native": "0.88.1",
+    "@types/node": "22.14.0"
   },
   "engines": {
-    "node": ">=20.19.4"
+    "node": "^22.13.0 || ^24.3.0 || ^26.0.0 || >=27.0.0"
   },
   "packageManager": "pnpm@10.28.2",
   "exports": {
@@ -61,6 +57,24 @@
     "./app.plugin.js": "./app.plugin.js",
     "./package.json": "./package.json"
   },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "keywords": [
+    "expo",
+    "react-native",
+    "http-flv",
+    "livestream",
+    "libvlc",
+    "srs",
+    "flv",
+    "live-streaming",
+    "low-latency",
+    "vlc",
+    "video-player"
+  ],
+  "author": "Windy Nguyen <thewind0811@gmail.com>",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/gocfun/expo-live-flv.git"
@@ -68,9 +82,5 @@
   "homepage": "https://github.com/gocfun/expo-live-flv#readme",
   "bugs": {
     "url": "https://github.com/gocfun/expo-live-flv/issues"
-  },
-  "publishConfig": {
-    "access": "public",
-    "registry": "https://registry.npmjs.org/"
   }
 }

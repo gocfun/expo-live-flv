@@ -1,9 +1,23 @@
 {
   "expo": {
-    "name": "Live FLV Example", "slug": "live-flv-example", "version": "0.0.1",
+    "name": "Live FLV Example",
+    "slug": "live-flv-example",
+    "version": "1.0.0",
     "newArchEnabled": true,
-    "ios": { "bundleIdentifier": "org.example.liveflv" },
-    "android": { "package": "org.example.liveflv" },
-    "plugins": ["@gocfun/expo-live-flv"]
+    "ios": {
+      "bundleIdentifier": "org.example.liveflv"
+    },
+    "android": {
+      "package": "org.example.liveflv"
+    },
+    "plugins": [
+      [
+        "@gocfun/expo-live-flv",
+        {
+          "supportsBackgroundPlayback": true
+        }
+      ]
+    ],
+    "scheme": "live-flv-example"
   }
 }

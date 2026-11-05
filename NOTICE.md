@@ -13,5 +13,5 @@ It calls, but does not vendor or relicense, expo-libvlc-player or VideoLAN binar
 The MIT license here only covers this repository's own code. Applications must
 inventory their actual binary/codec dependencies and comply with their notices,
 corresponding-source and replacement/relinking requirements as applicable.
-This alpha is not a completed license clearance for App Store / Play distribution.
+This release preparation does not constitute completed license clearance for App Store / Play distribution.
 No upstream native binary is included in this Git repository or npm tarball.

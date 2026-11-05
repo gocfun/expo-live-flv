@@ -1,16 +1,14 @@
 # Contributing
 
-This is an alpha extracted from an Expo 54 integration. Keep playback policy free
+The primary development target is Expo 58, with a separate SDK 54 compatibility fixture. Keep playback policy free
 of app APIs, auth, navigation and styling frameworks. Put new state-machine tests
 in tests/controller.test.cjs and component boundary tests in tests/component.test.cjs.
 The native view is mocked in component tests; report device tests separately.
 
-Before a PR: `pnpm test`, `pnpm test:package`, and describe tested Expo/RN/OS versions.
-The package smoke test installs a tarball into a temporary standalone Expo app,
-checks types and default/opt-in config plugins, then bundles Android, iOS and web.
-It requires registry access (or `pnpm test:package --offline` with a complete pnpm
-cache). `--keep` retains the temporary app for debugging. Device checks are tracked
-in DEVICE_TESTING.md; release requirements are in RELEASING.md.
+Before a PR: pnpm test, pnpm release:check, pnpm pack, example typecheck and
+Expo dependency checks. Run the SDK 54 fixture typecheck/tests when changing the
+public API or lifecycle policy. Describe tested Expo/RN/OS versions. Native plugin
+changes require prebuild idempotence checks and both native builds; see VALIDATION.md.
 Do not include .env files, credentials, signed stream URLs, native signing keys or
 application source from a consumer app. Redact URL queries and native messages
 before submitting logs. Error reports should include stable reason codes and
@@ -26,3 +24,8 @@ signing material or publish the generated benchmarking APKs as app releases.
 CPU/RAM/latency claims require actual devices and a controlled stream. Do not infer
 performance or LGPL distribution clearance from TypeScript/unit/build success.
 Keep upstream versions pinned until a new compatibility matrix is validated.
+
+Run `pnpm test:package` for tarball installation, default/opt-in plugin and platform
+bundle checks. Use `--offline` only with a complete cache; `--keep` retains the
+scratch consumer. DEVICE_TESTING.md tracks device coverage; RELEASE.md is the
+release checklist. Never send credentials through public security reports.

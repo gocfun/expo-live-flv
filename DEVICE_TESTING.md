@@ -47,3 +47,10 @@ Background playback coverage should be recorded from the consumer tests before
 claiming support for specific devices or OS versions. Android has no foreground playback service in this wrapper. A failed
 background test must be documented as a limitation, not hidden by increasing
 timeouts. No latency claim is justified without a controlled end-to-end clock.
+
+## SDK 58 release preparation — 2026-11-06
+
+The historical confirmation above predates the Expo 58 preparation. Native builds
+are recorded in VALIDATION.md. No new SDK 58 physical-device acceptance result
+is added by the repository consolidation. Record the new commit and SDK/build
+versions when validating the new consumer integration.

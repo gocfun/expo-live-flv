@@ -1,64 +1,112 @@
-# Validation
+# Validation — 2026-11-05
 
-## Consumer playback confirmation — reported 2026-11-01
+Release preparation: expo-live-flv 1.0.0, local only. No live stream or physical
+device playback is included in these results.
 
-- The maintainer confirmed playback testing was already completed in
-  `gocfun-mobile`. This is consumer integration testing in addition to the
-  automated checks below.
-- Tested device: **iPhone 12 Pro Max, iOS 26.7.2**, as reported by the maintainer.
-- Tested revision, execution date and individual scenarios were not supplied
-  in this confirmation. Record existing results in DEVICE_TESTING.md;
-  they should not be described as globally untested or automatically extended to
-  every scenario/platform or to the current unreleased watchdog fix.
+## Primary target: Expo SDK 58
 
-## Scoped npm package checks — 2026-11-01
+| Check | Result |
+| --- | --- |
+| Versions | Expo 58.0.23, RN 0.88.1, React 19.3.0, TypeScript 6.0.3, dev-client 58.0.18 |
+| Toolchain | Node 24.12.0, pnpm 10.28.2, JDK 17, Xcode 27.1 |
+| Library TypeScript and controller/component/plugin tests | Pass, 21/21 |
+| Independent example typecheck | Pass |
+| Online `expo install --check` | Pass; dependencies up to date |
+| Hermes export, iOS and Android | Pass, final example including background toggle |
+| Fresh Expo native prebuild with own plugin | Pass |
+| iOS generic arm64 Simulator Debug build, unsigned | Pass (`BUILD SUCCEEDED`) |
+| iOS embedded engine / background config | MobileVLCKit.framework present; UIBackgroundModes contains audio |
+| Android pinned binding Kotlin compile with SDK 58 shim | Pass (`BUILD SUCCESSFUL`) |
+| Android full arm64 development APK | Pass (`BUILD SUCCESSFUL`, 332 tasks; arm64-v8a only) |
+| Package release audit / tarball smoke check | Pass; release audit and extracted-tarball plugin load |
 
-- Package renamed to `@gocfun/expo-live-flv`; examples, Expo plugin references,
-  example lockfile and smoke checks use the scoped name.
-- Example frozen-lockfile validation, 20/20 tests and tarball consumer typecheck,
-  plugin introspection, Android/iOS/web exports and web source-map checks pass.
-- Publishing targets the public npm registry with public access; the dedicated
-  `publish:alpha` command explicitly selects tag `alpha`.
-  No npm publication was performed by these checks.
+The development APK is 106,626,206 bytes (101.69 MiB), containing only arm64
+native libraries including libvlc.so and libvlcjni.so. It is a Debug/dev-client
+artifact requiring Metro, not a store download or an R8 release comparison.
 
-## Open-source readiness checks — 2026-11-01
+Native templates use iOS 16.4, Android minSdk 24 / compileSdk 37 / targetSdk 36,
+Gradle 9.4.1 and NDK 27.1.12297006. The Android build uses the SDK 58 template's
+AGP 9 compatibility opt-outs (`android.builtInKotlin=false`, `android.newDsl=false`).
+These successful checks do not certify future AGP 10 or future Expo versions.
 
-- Node 24.12.0 / pnpm 10.28.2: TypeScript build and 20/20 unit/mocked-component
-  tests pass, including backwards/oscillating/reset timestamp regression cases.
-- Packed package installed in an independent temporary Expo consumer (no link to
-  library source). Consumer typecheck and default/opt-in config plugin introspection
-  pass. Default plugin leaves background audio disabled; opt-in adds the iOS audio mode.
-- Android/iOS Hermes and web Metro exports pass. Web source-map checks ensure
-  the web adapter is selected and the upstream native VLC binding is excluded.
-- Fixed the example entry point for pnpm isolated dependency layouts.
-- This automated audit run did not compile or launch a native app or play a
-  stream. Consumer playback was tested separately by the maintainer (see above). Native engine versions and
-  previously recorded APK measurements are unchanged; those APKs were not rebuilt.
-- Public repository created at `https://github.com/gocfun/expo-live-flv` and
-  package metadata configured for it. npm name ownership and a private security
-  reporting channel remain release setup items in RELEASING.md. No npm package
-  or application deployment was published.
+The initial Android binding compile failed because Expo 58 removed
+`expo.modules.core.errors.CurrentActivityNotFoundException`. The package plugin
+now generates an app-owned compatibility exception subclass of Kotlin
+`CodedException`, scoped to the pinned VLC module. The patched module compiles;
+source generation and Gradle idempotence have automated tests. No node_modules
+source file was edited. The iOS binding compiled without a compatibility shim.
 
-## Historical extraction baseline — 2026-10-31
+Reproduction (from example after install):
 
-- Standalone repo: pnpm install --frozen-lockfile --ignore-scripts; pnpm test:
-  TypeScript build and 16/16 unit/mocked-component tests pass.
-- Standalone example: independent pnpm install, typecheck and Expo prebuild config
-  evaluation pass. The demo native app has not been built/launched on a device.
-- GocFun consumer adapter: TypeScript and existing 45/45 tests pass; iOS/Hermes
-  bundle export passes after extraction. Navigation and styling remain app-owned.
-- Android consumer snapshot: both release arm64 builds pass with R8/shrink. Both
-  embed identical JS; native VLC is absent from the control; certificates match.
-  See benchmarks/ for size, SHA-256 and alignment evidence.
-- The native-size measurement used a fixed alpha.1 consumer snapshot. After the
-  measurement, alpha.2 added opt-in vlcOptions to preserve consumer-specific flags
-  found in the installed GocFun package. The engine/binding versions are unchanged;
-  this report does not claim byte-exact final alpha.2 APK size.
-- No custom/slim VLC build has been attempted in this phase.
-- This historical extraction run did not include stream/device execution. Later
-  consumer playback confirmation is recorded above; detailed scenario and
-  performance measurements are tracked separately in DEVICE_TESTING.md.
-- Native engine remains the existing expo-libvlc-player 4.0.5 dependency:
-  MobileVLCKit 3.7.3 / Android LibVLC 3.6.5. iOS native binding compiled in the
-  earlier consumer experiment; only the extracted JS bundle was revalidated here.
-- Local Git only. No GitHub repo, npm publication, cloud build or backend change.
+```sh
+npx expo prebuild --no-install
+# Set JAVA_HOME to JDK 17 and ANDROID_HOME to the installed Android SDK.
+cd android
+./gradlew :expo-libvlc-player:compileDebugKotlin --max-workers=2 --no-parallel
+./gradlew :app:assembleDebug -PreactNativeArchitectures=arm64-v8a --max-workers=2 --no-parallel
+```
+
+For iOS, install pods then build the generated LiveFLVExample workspace with:
+
+```sh
+xcodebuild -workspace ios/LiveFLVExample.xcworkspace -scheme LiveFLVExample \
+  -configuration Debug -sdk iphonesimulator \
+  -destination 'generic/platform=iOS Simulator' -jobs 2 \
+  CODE_SIGNING_ALLOWED=NO ARCHS=arm64 build
+```
+
+The recorded iOS build preceded the Android-only shim and final JS background
+button. The native iOS dependencies/configuration did not change. Final JS was
+separately typechecked and exported for both platforms. No Simulator launch,
+signed iOS device/archive build or App Store build has been performed.
+
+## Legacy target: Expo SDK 54
+
+The compatibility fixture uses Expo 54.0.37 / RN 0.81.5 / React 19.1 / TypeScript
+5.9.3. Public consumer typecheck, plugin config evaluation and 21/21 controller,
+mocked-component and plugin tests pass. SDK 54 does not receive the Android shim.
+This turn did not repeat SDK 54 native builds; see the historical benchmark.
+Mocked tests exercise React lifecycle boundaries, not native decoding or OS audio.
+`react-test-renderer` prints its upstream deprecation notice; assertions pass.
+
+## Size, distribution and outstanding checks
+
+The binding remains expo-libvlc-player 4.0.5 with Android LibVLC 3.6.5 and iOS
+MobileVLCKit 3.7.3. This release does not build a slim VLC engine. The SDK 54
+arm64 release A/B benchmark (53.40 versus 94.77 MiB; +41.37 MiB) belongs to a
+fixed alpha.1 consumer snapshot, not to this SDK 58 demo. See benchmarks/.
+
+No SDK 58 physical-device HTTPS SRS playback, token expiration, Wi-Fi/cellular switching,
+OS background audio, long-run A/V synchronization, latency, CPU/RAM/battery or
+thermal measurement is recorded. The app owner will perform those checks later;
+RELEASE.md lists concrete cases. No SDK 58 release-mode R8/APK/AAB or signed iOS
+distribution build is claimed. Review the actual native artifacts' licenses and
+platform requirements before shipping a consuming app.
+
+The GitHub CI matrix is configured but has not run on GitHub. No new npm/GitHub
+publication, production backend change, GocFun application change or deployment
+was performed during this release preparation.
+
+## Repository consolidation — 2026-11-06
+
+The canonical checkout is `/Users/windy/tmf/expo-live-flv`, with existing origin
+https://github.com/gocfun/expo-live-flv and package name `@gocfun/expo-live-flv`.
+The SDK 58 preparation was merged with existing watchdog regression fixes and
+scoped-package smoke checks. The native builds above were performed in the
+standalone preparation checkout, before this consolidation; they have not been
+repeated here. Current JS/package checks are recorded separately after the merge.
+
+Historical maintainer confirmation of consumer playback on iPhone 12 Pro Max /
+iOS 26.7.2 is preserved in DEVICE_TESTING.md. The exact tested revision and
+scenario results are not recorded; this is not SDK 58 device acceptance.
+
+Consolidated checkout checks on 2026-11-06:
+
+- Root TypeScript build and 24/24 controller/component/plugin tests pass.
+- SDK 54 consumer typecheck and 24/24 tests pass; SDK 58 example typecheck passes.
+- Scoped tarball installs into an independent Expo 58 consumer; consumer types,
+  default/opt-in background plugin and Android/iOS/web bundle exports pass.
+- The web source-map check handles SDK 58 indexed maps and confirms that the web
+  adapter is bundled without expo-libvlc-player.
+- Lockfiles, SDK 54 plugin config evaluation and package audit are checked before
+  the consolidation commit. No native rebuild or new device playback is claimed.

@@ -1,0 +1,7 @@
+{
+  "expo": {
+    "name": "Live FLV SDK 54 compatibility",
+    "slug": "live-flv-sdk54-compat",
+    "plugins": [["@gocfun/expo-live-flv", {"supportsBackgroundPlayback": true}]]
+  }
+}
