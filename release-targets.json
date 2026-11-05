@@ -1,0 +1,7 @@
+{
+  "checkedAt": "2026-11-05",
+  "primary": { "expo": "58.0.23", "react": "19.3.0", "reactNative": "0.88.1", "typescript": "6.0.3", "devClient": "58.0.18" },
+  "legacy": { "expo": "54.0.37", "react": "19.1.0", "reactNative": "0.81.5", "typescript": "5.9.3" },
+  "binding": "4.0.5",
+  "engines": { "android": "3.6.5", "ios": "3.7.3" }
+}

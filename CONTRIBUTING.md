@@ -1,11 +1,14 @@
 # Contributing
 
-This is an alpha extracted from an Expo 54 integration. Keep playback policy free
+The primary development target is Expo 58, with a separate SDK 54 compatibility fixture. Keep playback policy free
 of app APIs, auth, navigation and styling frameworks. Put new state-machine tests
 in tests/controller.test.cjs and component boundary tests in tests/component.test.cjs.
 The native view is mocked in component tests; report device tests separately.
 
-Before a PR: pnpm test, npm pack, and describe tested Expo/RN/OS versions.
+Before a PR: pnpm test, pnpm release:check, pnpm pack, example typecheck and
+Expo dependency checks. Run the SDK 54 fixture typecheck/tests when changing the
+public API or lifecycle policy. Describe tested Expo/RN/OS versions. Native plugin
+changes require prebuild idempotence checks and both native builds; see VALIDATION.md.
 Do not include .env files, credentials, signed stream URLs, native signing keys or
 application source from a consumer app. Redact URL queries and native messages
 before submitting logs. Error reports should include stable reason codes and

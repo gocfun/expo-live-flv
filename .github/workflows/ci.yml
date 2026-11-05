@@ -1,15 +1,38 @@
 name: package-checks
-on: [push, pull_request]
+on: [push, pull_request, workflow_dispatch]
 jobs:
-  test:
+  sdk58:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: '24'
+          node-version-file: .nvmrc
           cache: pnpm
       - run: pnpm install --frozen-lockfile --ignore-scripts
       - run: pnpm test
-      - run: pnpm pack
+      - run: pnpm --dir example install --frozen-lockfile --ignore-scripts
+      - run: pnpm --dir example typecheck
+      - run: pnpm --dir example exec expo install --check
+      - run: pnpm release:check
+      - run: pnpm pack --pack-destination artifacts
+      - uses: actions/upload-artifact@v4
+        with:
+          name: npm-package
+          path: artifacts/*.tgz
+  sdk54:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile --ignore-scripts
+      - run: pnpm build
+      - run: pnpm --dir compat/sdk54 install --frozen-lockfile --ignore-scripts
+      - run: pnpm --dir compat/sdk54 typecheck
+      - run: pnpm --dir compat/sdk54 exec expo config --type prebuild --json
+      - run: FLV_TEST_DEPENDENCY_ROOT="$PWD/compat/sdk54" node --test tests/*.test.cjs
