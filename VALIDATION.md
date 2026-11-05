@@ -125,3 +125,20 @@ not repeated by this workflow.
 The tag-triggered publish.yml workflow reuses both CI jobs and publishes their
 exact tarball via npm OIDC only after successful checks. A successful registry
 verification step is required to confirm publication.
+
+## npm publication — 2026-11-06
+
+`@gocfun/expo-live-flv@1.0.0` was accepted by npm through the saved GitHub
+Trusted Publisher and is exposed as `latest`. The registry tarball SHA-512
+matches the original npm-package artifact from run 42081621687 exactly.
+The artifact SHA-1 is `8e2e76b6a1de8683f714bdd40c9838bd3bba8e8b`.
+Provenance was signed and logged at
+https://search.sigstore.dev/?logIndex=3697968028.
+
+The original publish job accepted the release, but its immediate registry check
+ran before npm finished processing and reported a false failure. Registry
+availability and integrity were subsequently verified independently. The
+follow-up workflow change adds a bounded processing wait and checks the latest
+tag and exact tarball integrity. Four regression tests cover delayed visibility,
+network/tag propagation, wrong integrity and timeout; local tests total 32/32.
+The published v1.0.0 tag is retained; no duplicate publish is attempted.

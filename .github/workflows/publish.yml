@@ -65,11 +65,6 @@ jobs:
           RELEASE_ARCHIVE: ${{ needs.release.outputs.archive }}
         run: npm publish "./artifacts/$RELEASE_ARCHIVE" --access public --provenance --tag latest --ignore-scripts
       - name: Verify registry release
-        run: |
-          node <<'JS'
-          const assert = require('node:assert/strict')
-          const { execFileSync } = require('node:child_process')
-          const manifest = require('./package.json')
-          const released = JSON.parse(execFileSync('npm', ['view', `${manifest.name}@${manifest.version}`, 'version', '--json', '--registry=https://registry.npmjs.org/'], {encoding:'utf8'}))
-          assert.equal(released, manifest.version)
-          JS
+        env:
+          RELEASE_ARCHIVE: ${{ needs.release.outputs.archive }}
+        run: node scripts/verify-registry.cjs "./artifacts/$RELEASE_ARCHIVE"
