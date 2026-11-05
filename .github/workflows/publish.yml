@@ -1,0 +1,75 @@
+name: publish-npm
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: npm-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    outputs:
+      archive: ${{ steps.metadata.outputs.archive }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+      - id: metadata
+        name: Verify release tag and package identity
+        run: node scripts/check-publish.cjs
+  checks:
+    needs: release
+    uses: ./.github/workflows/ci.yml
+  publish:
+    needs: [release, checks]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          registry-url: https://registry.npmjs.org/
+      - name: Check npm OIDC support
+        run: |
+          npm --version
+          node -e "const v=require('node:child_process').execFileSync('npm',['--version'],{encoding:'utf8'}).trim().split('.').map(Number); if(v[0]<11 || (v[0]===11 && (v[1]<5 || (v[1]===5 && v[2]<1)))) throw Error('npm >=11.5.1 required')"
+      - uses: actions/download-artifact@v4
+        with:
+          name: npm-package
+          path: artifacts
+      - name: Verify packed package identity
+        env:
+          RELEASE_ARCHIVE: ${{ needs.release.outputs.archive }}
+        run: |
+          node <<'JS'
+          const assert = require('node:assert/strict')
+          const { execFileSync } = require('node:child_process')
+          const manifest = require('./package.json')
+          const packed = JSON.parse(execFileSync('tar', ['-xOf', `artifacts/${process.env.RELEASE_ARCHIVE}`, 'package/package.json'], {encoding:'utf8'}))
+          assert.equal(packed.name, manifest.name)
+          assert.equal(packed.version, manifest.version)
+          JS
+      - name: Publish tested tarball with npm trusted publishing
+        env:
+          RELEASE_ARCHIVE: ${{ needs.release.outputs.archive }}
+        run: npm publish "artifacts/$RELEASE_ARCHIVE" --access public --provenance --tag latest --ignore-scripts
+      - name: Verify registry release
+        run: |
+          node <<'JS'
+          const assert = require('node:assert/strict')
+          const { execFileSync } = require('node:child_process')
+          const manifest = require('./package.json')
+          const released = JSON.parse(execFileSync('npm', ['view', `${manifest.name}@${manifest.version}`, 'version', '--json', '--registry=https://registry.npmjs.org/'], {encoding:'utf8'}))
+          assert.equal(released, manifest.version)
+          JS

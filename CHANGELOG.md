@@ -7,6 +7,11 @@ release has been published.
 
 ### Added
 
+- GitHub Actions npm CD for matching stable version tags. Publishing waits for
+  both SDK checks, uses the tested tarball, verifies package identity and supports
+  npm Trusted Publishing with provenance. Main-branch pushes only run CI.
+- Release guard tests reject branches, mismatched tags, prereleases and forks.
+
 - Separate Expo SDK 54 compatibility fixture covering the public consumer types,
   plugin configuration and mocked lifecycle/reconnect behavior.
 - SDK 58 / SDK 54 CI checks, release package audit and extracted-tarball plugin

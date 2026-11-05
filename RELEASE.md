@@ -66,3 +66,36 @@ No physical-device playback run is recorded in this preparation.
 
 A slim VLC engine is a separate effort. Publishing the wrapper does not reduce
 the native size measured in the SDK 54 benchmark.
+
+## GitHub Actions npm CD
+
+`.github/workflows/publish.yml` runs on a `v*` tag push (or a manual dispatch
+whose ref is that release tag). The tag must equal `v` plus the stable version
+in package.json. Pushes to main run CI without publishing. The reusable CI must
+pass both SDK 58 and SDK 54 jobs before the publish job can run. The publish job
+uses the exact tarball uploaded by CI, verifies its name/version, publishes it
+publicly with provenance and the latest dist-tag, then checks the registry.
+Prerelease versions require a separate dist-tag policy and are rejected here.
+
+Configure npm Trusted Publishing for the existing scoped package before the
+first CD release. In npm package Settings → Trusted Publisher, select GitHub
+Actions and enter organization `gocfun`, repository `expo-live-flv`, workflow
+filename `publish.yml`, no environment name. Permit `npm publish` (direct
+publishing); stage-only permission will not authorize this workflow. The GitHub
+job has `id-token: write` and uses Node 24.12.0 / npm >=11.5.1. No NPM_TOKEN secret
+is used. Configure the publisher near the first release because unused publisher
+configurations can expire; see the current npm documentation.
+
+After pushing the release commit and checking CI, create and push its tag:
+
+```sh
+git tag -a v1.0.0 -m "Release 1.0.0"
+git push origin v1.0.0
+```
+
+A successful npm publication cannot reuse the same package version. For a failed
+run before publication, retry that workflow after fixing authentication; check
+npm before retrying if a publish may already have succeeded.
+
+References: https://docs.npmjs.com/trusted-publishers/ and
+https://docs.github.com/en/actions/tutorials/publish-packages/publish-nodejs-packages
