@@ -63,7 +63,7 @@ jobs:
       - name: Publish tested tarball with npm trusted publishing
         env:
           RELEASE_ARCHIVE: ${{ needs.release.outputs.archive }}
-        run: npm publish "artifacts/$RELEASE_ARCHIVE" --access public --provenance --tag latest --ignore-scripts
+        run: npm publish "./artifacts/$RELEASE_ARCHIVE" --access public --provenance --tag latest --ignore-scripts
       - name: Verify registry release
         run: |
           node <<'JS'
