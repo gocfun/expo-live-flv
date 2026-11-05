@@ -5,7 +5,7 @@ handling and an app-owned overlay. No paid playback SDK or hosted service is
 required. Supply your own authorized HTTPS stream, including an SRS Edge URL.
 The package does not select edges, fetch credentials or contact a backend.
 
-Version **1.0.0 is prepared locally; it has not been published**. The latest stable
+Version **1.0.0**. The latest stable
 Expo version checked on 2026-11-05 is **58.0.23**. The primary development target
 is Expo 58 / React Native 0.88.1 / React 19.3.0, Hermes and New Architecture.
 A separate SDK 54.0.37 / RN 0.81.5 / React 19.1 fixture checks the legacy JS/API
@@ -14,15 +14,21 @@ exact distinction between native builds, mocked tests and device playback.
 
 ## Install
 
-Use Node 24.12.0 for this repository (`nvm use`), with pnpm 10.28.2:
+For an Expo app, install the released package and pinned native binding:
+
+```sh
+pnpm add @gocfun/expo-live-flv@1.0.0 expo-libvlc-player@4.0.5
+npx expo install expo-dev-client
+```
+
+To build a local tarball instead, use Node 24.12.0 (`nvm use`) and pnpm 10.28.2:
 
 ```sh
 pnpm install --frozen-lockfile
 pnpm test
 pnpm pack
-# In a consuming Expo app, install the generated tarball and the pinned binding:
+# In the consuming app, install the generated local tarball and pinned binding:
 pnpm add /absolute/path/gocfun-expo-live-flv-1.0.0.tgz expo-libvlc-player@4.0.5
-npx expo install expo-dev-client
 ```
 
 Add this package's plugin once; replace an existing `expo-libvlc-player` plugin

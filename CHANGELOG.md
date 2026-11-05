@@ -1,9 +1,9 @@
 # Changelog
 
-## 1.0.0 — prepared 2026-11-05 (not published)
+## 1.0.0 — 2026-11-06
 
-Changelog updated 2026-11-06. This version is prepared locally; no npm or GitHub
-release has been published.
+Release notes for the Expo 58 update. Registry versions are available at
+https://www.npmjs.com/package/@gocfun/expo-live-flv.
 
 ### Added
 
@@ -15,7 +15,7 @@ release has been published.
 - Separate Expo SDK 54 compatibility fixture covering the public consumer types,
   plugin configuration and mocked lifecycle/reconnect behavior.
 - SDK 58 / SDK 54 CI checks, release package audit and extracted-tarball plugin
-  smoke check. The GitHub workflow is configured but has not run remotely.
+  smoke check. Both SDK jobs passed on GitHub; see VALIDATION.md.
 - Background-audio toggle in the standalone example for device testing.
 - Migration guide, release checklist and a validation report distinguishing
   automated checks, native builds and pending device playback tests.

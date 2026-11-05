@@ -1,10 +1,10 @@
 # Preparing and publishing 1.0.0
 
-Current state: local 1.0.0 release preparation. The existing GitHub repository is
-https://github.com/gocfun/expo-live-flv and the npm package is
-`@gocfun/expo-live-flv`. No publish, push, release tag or deployment is performed
-by this consolidation. Verify npm organization ownership before publication;
-GitHub access does not establish npm permissions.
+Package: `@gocfun/expo-live-flv`. Repository:
+https://github.com/gocfun/expo-live-flv. Stable releases are published by the
+`publish.yml` GitHub Actions workflow from matching version tags. Check the npm
+registry and workflow run for the actual publication result; a tag alone does
+not prove a successful publish. GitHub access does not establish npm permissions.
 
 ## Reproduce local checks
 
@@ -52,7 +52,7 @@ Edge stream supplied by the app owner. Do not commit signed stream URLs.
 Record device model, OS, network, codec/resolution, build configuration and results.
 No physical-device playback run is recorded in this preparation.
 
-## Public release steps (not executed)
+## Public release steps
 
 1. Review the configured repository/homepage/issues metadata and push the reviewed
    source when authorized. Confirm npm organization membership and scoped-name ownership.

@@ -83,7 +83,8 @@ RELEASE.md lists concrete cases. No SDK 58 release-mode R8/APK/AAB or signed iOS
 distribution build is claimed. Review the actual native artifacts' licenses and
 platform requirements before shipping a consuming app.
 
-The GitHub CI matrix is configured but has not run on GitHub. No new npm/GitHub
+The checks above were recorded before the first GitHub CI run; see the dated
+CI/CD entry below for subsequent workflow results. No new npm/GitHub
 publication, production backend change, GocFun application change or deployment
 was performed during this release preparation.
 
@@ -110,3 +111,17 @@ Consolidated checkout checks on 2026-11-06:
   adapter is bundled without expo-libvlc-player.
 - Lockfiles, SDK 54 plugin config evaluation and package audit are checked before
   the consolidation commit. No native rebuild or new device playback is claimed.
+
+## GitHub CI/CD — 2026-11-06
+
+The package-checks run for commit ebfb7c5 passed on GitHub:
+https://github.com/gocfun/expo-live-flv/actions/runs/42080092363.
+Both SDK 58 and SDK 54 jobs passed, including 28/28 tests per dependency set,
+consumer typechecks, the SDK 58 tarball smoke/export checks and package audit.
+The four new release guard tests reject wrong tags, branches, forks and
+prerelease versions for the stable publisher. Native/device checks above were
+not repeated by this workflow.
+
+The tag-triggered publish.yml workflow reuses both CI jobs and publishes their
+exact tarball via npm OIDC only after successful checks. A successful registry
+verification step is required to confirm publication.
